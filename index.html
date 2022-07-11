@@ -3,8 +3,15 @@
         <meta charset="utf-8">
     </head>
     <body>
-        <button id="openLocalVideo">Open camera</button>
         <video id="localVideo" autoplay></video>
+        <video id="remoteVideo" autoplay></video>
+
+        <div class="box">
+            <button id="startButton">Open camera</button>
+            <button id="callButton">Open camera</button>
+            <button id="hangupButton">Hang up</button>
+        </div>
+
         <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
         <script src="app.js"></script>
     </body>
