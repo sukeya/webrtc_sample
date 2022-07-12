@@ -7,7 +7,11 @@ let constraints = {
 };
 
 // configuration of ICE.
-const configuration = {};
+const configuration = {
+  iceServers: [],
+  iceTransportPolicy: `all`,
+  iceCandidatePoolSize: 20
+};
 
 // offer option of SDP.
 const offerOptions = {
