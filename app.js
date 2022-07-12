@@ -71,18 +71,18 @@ async function call() {
     pc1 = new RTCPeerConnection(configuration);
     console.log('Created local peer connection object pc1');
     // If IP address or port is changed, add the ICE candidates of the other peer connection.
-    pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+    pc1.onicecandidate(e => onIceCandidate(pc1, e));
 
     pc2 = new RTCPeerConnection(configuration);
     console.log('Created remote peer connection object pc2');
     // If IP address or port is changed, add the ICE candidates of the other peer connection.
-    pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+    pc2.onicecandidate(e => onIceCandidate(pc2, e));
     // If ICE state is changed, output it to log.
-    pc1.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc1, e));
-    pc2.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc2, e));
+    pc1.oniceconnectionstatechange(e => onIceStateChange(pc1, e));
+    pc2.oniceconnectionstatechange(e => onIceStateChange(pc2, e));
     // If remote peer connection has received, output this to log.
     pc2.addEventListener('track', gotRemoteStream);
-  
+    // add local stream to local peer connection.
     localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
     console.log('Added local stream to pc1');
   
