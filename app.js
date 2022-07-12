@@ -14,9 +14,11 @@ const configuration = {
 };
 
 // offer option of SDP.
+// TODO should I remove all option of offerOptions?
+// (because each offerToReceive* ensure that * can be received, regardless if audio is sent or not.)
 const offerOptions = {
-    offerToReceiveAudio: 1,
-    offerToReceiveVideo: 1
+    offerToReceiveAudio: true,
+    offerToReceiveVideo: true
 };
 
 const startButton = document.getElementById('startButton');
