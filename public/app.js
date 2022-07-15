@@ -26,13 +26,6 @@ const offerOptions = {
     offerToReceiveVideo: true
 };
 
-const startButton = document.getElementById('startButton');
-const callButton = document.getElementById('callButton');
-const hangupButton = document.getElementById('hangupButton');
-
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-
 // local media
 let localStream;
 // peer connection
