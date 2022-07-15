@@ -1,5 +1,7 @@
 `use strict`;
 
+mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
+
 // constraints of local media.
 let constraints = {
     audio: true,
