@@ -27,7 +27,9 @@ const offerOptions = {
 };
 
 // local media
-let localStream;
+let localStream = null;
+// remote media
+let remoteStream = null;
 // peer connection
 // local
 let pc1;
