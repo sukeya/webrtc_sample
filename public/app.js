@@ -15,7 +15,7 @@ const configuration = {
     'stun:stun2.l.google.com:19302'
   ],
   iceTransportPolicy: `all`,
-  iceCandidatePoolSize: 20
+  iceCandidatePoolSize: 10
 };
 
 // offer option of SDP.
