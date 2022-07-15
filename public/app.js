@@ -31,10 +31,7 @@ let localStream = null;
 // remote media
 let remoteStream = null;
 // peer connection
-// local
-let pc1;
-// remote
-let pc2;
+let pc = null;
 // the time which call func is called.
 let startTime;
 
