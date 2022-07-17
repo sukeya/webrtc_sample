@@ -1,5 +1,7 @@
 `use strict`;
 
+import db from "init-firebase"
+
 mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
 
 // constraints of local media.
