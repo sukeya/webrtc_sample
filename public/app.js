@@ -41,12 +41,6 @@ let roomDialog = null;
 let roomId = null;
 
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-}
-
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
@@ -64,14 +58,19 @@ async function createRoom() {
 
   registerPeerConnectionListeners();
 
-  // Add code for creating a room here
-  // TODO roomidが被らないようにすべき?
-  roomId = getRandomInt(10 ** 8).toString();
-  const room = await addDoc(collection(db, "rooms"), {
-    id: roomId
-  });
-  console.log("Room created with ID: ", room.id);
-  // Code for creating room above
+  // creat a room
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+
+  const roomWithOffer = {
+    offer: {
+        type: offer.type,
+        sdp: offer.sdp
+    }
+  }
+  const roomRef = await addDoc(collection(db, "rooms"), roomWithOffer);
+  const roomId = roomRef.id;
+  document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
   localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, localStream);
