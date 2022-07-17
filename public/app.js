@@ -35,7 +35,7 @@ let remoteStream = null;
 // peer connection
 let pc = null;
 // the time which call func is called.
-let startTime;
+let startTime = null;
 let roomDialog = null;
 let roomId = null;
 
