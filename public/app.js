@@ -41,6 +41,12 @@ let roomDialog = null;
 let roomId = null;
 
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
@@ -48,7 +54,6 @@ function init() {
   document.querySelector('#joinBtn').addEventListener('click', joinRoom);
   roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 }
-
 
 async function createRoom() {
   document.querySelector('#createBtn').disabled = true;
@@ -60,7 +65,12 @@ async function createRoom() {
   registerPeerConnectionListeners();
 
   // Add code for creating a room here
-
+  // TODO roomidが被らないようにすべき?
+  roomId = getRandomInt(10 ** 8).toString();
+  const room = await addDoc(collection(db, "rooms"), {
+    id: roomId
+  });
+  console.log("Room created with ID: ", room.id);
   // Code for creating room above
 
   localStream.getTracks().forEach(track => {
