@@ -1,6 +1,5 @@
-const firebase = require("firebase");
-// Required for side-effects
-require("firebase/firestore");
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -16,6 +15,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
 // Initialize Cloud Firestore and get a reference to the service
-const db = firebase.firestore();
+const db = getFirestore(app);
