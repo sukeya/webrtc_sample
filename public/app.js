@@ -35,7 +35,7 @@ let localStream = null;
 // remote media
 let remoteStream = null;
 // peer connection
-let pc = null;
+let peerConnection = null;
 // the time which call func is called.
 let startTime = null;
 let roomDialog = null;
