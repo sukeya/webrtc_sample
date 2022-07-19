@@ -1,8 +1,10 @@
 `use strict`;
 
-import { collection, addDoc } from "firebase/firestore";
+import { ref, set } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import {db, auth} from "init-firebase"
+
+import { v4 as uuidv4 } from "uuid";
 
 mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
 
@@ -60,18 +62,19 @@ async function createRoom() {
   registerPeerConnectionListeners();
 
   // creat a room
+  const uid = await authenticate();
+  const roomId = uuidv4();
+  // "" can be replaced with whatever database accepts.
+  await set(ref(db, "rooms/" + roomId + "/" + uid), "");
+  document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
+
+  // create a offer
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
-
-  const roomWithOffer = {
-    offer: {
-        type: offer.type,
-        sdp: offer.sdp
-    }
-  }
-  const roomRef = await addDoc(collection(db, "rooms"), roomWithOffer);
-  const roomId = roomRef.id;
-  document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
+  await set(ref(db, "offers/" + uid), {
+    type: offer.type,
+    sdp: offer.sdp
+  });
 
   localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, localStream);
@@ -82,7 +85,7 @@ async function createRoom() {
   // Code for creating a room above
 
   // Code for collecting ICE candidates below
-
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
   // Code for collecting ICE candidates above
 
   peerConnection.addEventListener('track', event => {
@@ -291,7 +294,14 @@ async function onCreateAnswerSuccess(desc) {
   }
 }
 
-async function onIceCandidate(pc, event) {
+async function onIceCandidate(uid, event) {
+  if (event.candidate) {
+    if (event.candidate.candidate === '') {
+      return;
+    }
+    const {candidate} = event;
+
+  }
   try {
     await (getOtherPc(pc).addIceCandidate(event.candidate));
     onAddIceCandidateSuccess(pc);
