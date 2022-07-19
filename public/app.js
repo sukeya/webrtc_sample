@@ -1,7 +1,8 @@
 `use strict`;
 
 import { collection, addDoc } from "firebase/firestore";
-import {db} from "init-firebase"
+import { signInWithEmailAndPassword } from "firebase/auth";
+import {db, auth} from "init-firebase"
 
 mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
 
@@ -360,6 +361,18 @@ function registerPeerConnectionListeners() {
     console.log(
         `ICE connection state change: ${peerConnection.iceConnectionState}`);
   });
+}
+
+
+async function authenticate() {
+  try {
+    const email = document.querySelector(`#authEmail`);
+    const password = document.querySelector(`#authPass`);
+    let userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user.uid;
+  } catch(error) {
+    console.error(`code: ${error.code}, ${error.message}`);
+  }
 }
 
 
