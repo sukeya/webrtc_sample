@@ -1,6 +1,6 @@
 `use strict`;
 
-import { ref, set, onValue } from "firebase/database";
+import { ref, set, get, push } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "init-firebase"
 
@@ -67,7 +67,7 @@ async function createRoom() {
   const uid = await authenticate();
   const roomId = uuidv4();
   // "" can be replaced with whatever database accepts.
-  await set(ref(db, "rooms/" + roomId + "/" + uid), "");
+  await set(push(ref(db, "rooms/" + roomId)), uid);
   document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
   // create a offer
@@ -87,8 +87,9 @@ async function createRoom() {
 
   // watch another user entered in the room.
   let peerUID = null;
-  await onValue(ref(db, "rooms/" + roomId), (snapshot) => {
+  await onChildAdded(ref(db, "rooms/" + roomId), (snapshot) => {
     const data = snapshot.val();
+    // TODO If there are users more than 2 in a room, how should I connect each user?
     if (data.length() >= 2 && data[0] === uid) {
       peerUID = data[1];
     }
@@ -308,8 +309,7 @@ async function onIceCandidate(uid, event) {
       return;
     }
     const {candidate} = event;
-    set(ref(db, "candidates/" + uid + "/" + i.toString()), candidate.toJSON());
-    ++i;
+    await set(push(ref(db, "candidates/" + uid)), candidate.toJSON());
   }
 }
 
