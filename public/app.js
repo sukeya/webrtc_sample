@@ -375,8 +375,8 @@ function registerPeerConnectionListeners() {
 
 async function authenticate() {
   try {
-    const email = document.querySelector(`#authEmail`);
-    const password = document.querySelector(`#authPass`);
+    const email = document.querySelector(`#authEmail`).value;
+    const password = document.querySelector(`#authPass`).value;
     let userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user.uid;
   } catch(error) {
