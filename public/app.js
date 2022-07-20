@@ -87,12 +87,9 @@ async function createRoom() {
 
   // watch another user entered in the room.
   let peerUID = null;
-  await onChildAdded(ref(db, "rooms/" + roomId), (snapshot) => {
-    const data = snapshot.val();
+  await onChildAdded(ref(db, "rooms/" + roomId), (data) => {
     // TODO If there are users more than 2 in a room, how should I connect each user?
-    if (data.length() >= 2 && data[0] === uid) {
-      peerUID = data[1];
-    }
+    peerUID = data.val();
   });
 
   peerConnection.addEventListener('track', event => {
