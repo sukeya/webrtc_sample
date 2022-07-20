@@ -117,7 +117,7 @@ function joinRoom() {
 
   document.querySelector('#confirmJoinBtn').
       addEventListener('click', async () => {
-        roomId = document.querySelector('#room-id').value;
+        roomId = document.querySelector('#joinRoomId').value;
         console.log('Join room: ', roomId);
         document.querySelector(
             '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
