@@ -102,9 +102,11 @@ async function createRoom() {
     });
   });
 
-  // Listening for remote session description below
-
-  // Listening for remote session description above
+  // Listening for remote session description.
+  await get(ref(db, "offers/" + uid), (snapshot) => {
+    const data = snapshot.val();
+    peerConnection.setRemoteDescription(data);
+  });
 
   // Listen for remote ICE candidates below
 
