@@ -101,9 +101,8 @@ async function createRoom() {
   });
 
   // Listening for remote session description.
-  await get(ref(db, "offers/" + uid), (snapshot) => {
-    const data = snapshot.val();
-    peerConnection.setRemoteDescription(data);
+  await get(ref(db, "offers/" + peerUID), (snapshot) => {
+    peerConnection.setRemoteDescription(snapshot.val());
   });
 
   // Listen for remote ICE candidates below
