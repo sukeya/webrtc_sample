@@ -128,38 +128,54 @@ function joinRoom() {
 }
 
 async function joinRoomById(roomId) {
-  const roomRef = db.collection('rooms').doc(`${roomId}`);
-  const roomSnapshot = await roomRef.get();
-  console.log('Got room:', roomSnapshot.exists);
-
-  if (roomSnapshot.exists) {
-    console.log('Create PeerConnection with configuration: ', configuration);
-    peerConnection = new RTCPeerConnection(configuration);
-    registerPeerConnectionListeners();
-    localStream.getTracks().forEach(track => {
-      peerConnection.addTrack(track, localStream);
-    });
-
-    // Code for collecting ICE candidates below
-
-    // Code for collecting ICE candidates above
-
-    peerConnection.addEventListener('track', event => {
-      console.log('Got remote track:', event.streams[0]);
-      event.streams[0].getTracks().forEach(track => {
-        console.log('Add a track to the remoteStream:', track);
-        remoteStream.addTrack(track);
+  await get(ref(db, "rooms/" + roomId), (snapshot) => {
+    if (snapshot.exists()) {
+      let data = snapshot.val();
+      if (data.length < 1) {
+        // TODO write error.
+      }
+      let peerUID = data[0];
+      console.log('Create PeerConnection with configuration: ', configuration);
+      peerConnection = new RTCPeerConnection(configuration);
+      registerPeerConnectionListeners();
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
       });
-    });
 
-    // Code for creating SDP answer below
+      let uid = authenticate();
+      // Code for collecting ICE candidates below
+      pc.onicecandidate = e => onIceCandidate(uid, e);
+      // Code for collecting ICE candidates above
 
-    // Code for creating SDP answer above
+      peerConnection.addEventListener('track', event => {
+        console.log('Got remote track:', event.streams[0]);
+        event.streams[0].getTracks().forEach(track => {
+          console.log('Add a track to the remoteStream:', track);
+          remoteStream.addTrack(track);
+        });
+      });
 
-    // Listening for remote ICE candidates below
+      // set remote SDP offer.
+      await get(ref(db, "offers/" + peerUID), (snapshot) => {
+        await peerConnection.setRemoteDescription(snapshot.val());
+      });
 
-    // Listening for remote ICE candidates above
-  }
+      // create SDP answer.
+      let answer = peerConnection.createAnswer();
+      await set(ref(db, "offers/" + uid), {
+        type: answer.type,
+        sdp: answer.sdp
+      });
+
+      // Listening for remote ICE candidates.
+      await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
+        peerConnection.addIceCandidate(data.val());
+      });
+
+      // register myself to room.
+      await set(push(ref(db, "rooms/" + roomId)), uid);
+    }
+  });
 }
 
 
