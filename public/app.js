@@ -2,7 +2,7 @@
 
 import { ref, set } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import {db, auth} from "init-firebase"
+import { db, auth } from "init-firebase"
 
 import { v4 as uuidv4 } from "uuid";
 
