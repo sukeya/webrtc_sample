@@ -1,6 +1,6 @@
 `use strict`;
 
-import { ref, set } from "firebase/database";
+import { ref, set, onValue } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "init-firebase"
 
@@ -84,6 +84,15 @@ async function createRoom() {
 
   // upload my ICE candidates.
   peerConnection.onicecandidate = e => onIceCandidate(uid, e);
+
+  // watch another user entered in the room.
+  let peerUID = null;
+  await onValue(ref(db, "rooms/" + roomId), (snapshot) => {
+    const data = snapshot.val();
+    if (data.length() >= 2 && data[0] === uid) {
+      peerUID = data[1];
+    }
+  });
 
   peerConnection.addEventListener('track', event => {
     console.log('Got remote track:', event.streams[0]);
