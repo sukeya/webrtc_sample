@@ -82,13 +82,8 @@ async function createRoom() {
     peerConnection.addTrack(track, localStream);
   });
 
-  // Code for creating a room below
-
-  // Code for creating a room above
-
-  // Code for collecting ICE candidates below
+  // upload my ICE candidates.
   peerConnection.onicecandidate = e => onIceCandidate(uid, e);
-  // Code for collecting ICE candidates above
 
   peerConnection.addEventListener('track', event => {
     console.log('Got remote track:', event.streams[0]);
