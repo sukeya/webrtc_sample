@@ -106,6 +106,7 @@ async function createRoom() {
   });
 
   // Listen for remote ICE candidates
+  // TODO should I do `get` before watching whether a child is added.
   await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
     peerConnection.addIceCandidate(data.val());
   });
