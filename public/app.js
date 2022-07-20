@@ -42,6 +42,8 @@ let peerConnection = null;
 let startTime = null;
 let roomDialog = null;
 let roomId = null;
+// index of candidates of user.
+let i = 1;
 
 
 function init() {
@@ -300,15 +302,9 @@ async function onIceCandidate(uid, event) {
       return;
     }
     const {candidate} = event;
-
+    set(ref(db, "candidates/" + uid + "/" + i.toString()), candidate.toJSON());
+    ++i;
   }
-  try {
-    await (getOtherPc(pc).addIceCandidate(event.candidate));
-    onAddIceCandidateSuccess(pc);
-  } catch (e) {
-    onAddIceCandidateError(pc, e);
-  }
-  console.log(`${getName(pc)} ICE candidate:\n${event.candidate ? event.candidate.candidate : '(null)'}`);
 }
 
 function onAddIceCandidateSuccess(pc) {
