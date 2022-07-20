@@ -105,9 +105,10 @@ async function createRoom() {
     peerConnection.setRemoteDescription(snapshot.val());
   });
 
-  // Listen for remote ICE candidates below
-
-  // Listen for remote ICE candidates above
+  // Listen for remote ICE candidates
+  await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
+    peerConnection.addIceCandidate(data.val());
+  });
 }
 
 function joinRoom() {
