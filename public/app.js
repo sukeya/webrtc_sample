@@ -24,14 +24,6 @@ const configuration = {
   iceCandidatePoolSize: 10
 };
 
-// offer option of SDP.
-// TODO should I remove all option of offerOptions?
-// (because each offerToReceive* ensure that * can be received, regardless if audio is sent or not.)
-const offerOptions = {
-    offerToReceiveAudio: true,
-    offerToReceiveVideo: true
-};
-
 // local media
 let localStream = null;
 // remote media
@@ -66,7 +58,6 @@ async function createRoom() {
   // creat a room
   const uid = await authenticate();
   const roomId = uuidv4();
-  // "" can be replaced with whatever database accepts.
   await set(push(ref(db, "rooms/" + roomId)), uid);
   document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
@@ -202,8 +193,7 @@ function hangUp() {
 }
 
 async function openUserMedia(e) {
-  const stream = await navigator.mediaDevices.getUserMedia(
-      {video: true, audio: true});
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
   document.querySelector('#localVideo').srcObject = stream;
   localStream = stream;
   remoteStream = new MediaStream();
