@@ -1,6 +1,6 @@
 `use strict`;
 
-import { ref, set, get, push } from "firebase/database";
+import { ref, set, get, push, remove } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "init-firebase"
 
@@ -187,6 +187,12 @@ function hangUp() {
   pc.close();
   pc = null;
   document.querySelector('#hangupBtn').disabled = true;
+  // delete room.
+  await remove(ref(db, "rooms/" + roomId));
+  // delete offer
+  await remove(ref(db, "offers/" + uid));
+  // delete ICE candidates
+  await remove(ref(db, "candidates/" + uid));
 }
 
 async function openUserMedia(e) {
