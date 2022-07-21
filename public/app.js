@@ -41,6 +41,11 @@ let peerConnection = null;
 let roomDialog = null;
 let roomId = null;
 
+function UserException(message) {
+  this.message = message;
+  this.name = 'UserException';
+}
+
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
@@ -127,7 +132,8 @@ async function joinRoomById(roomId) {
     if (snapshot.exists()) {
       let data = snapshot.val();
       if (data.length < 1) {
-        // TODO write error.
+        await remove(ref(db, "rooms/" + roomId));
+        throw UserException("Invalid Room.");
       }
       let peerUID = data[0];
       console.log('Create PeerConnection with configuration: ', configuration);
