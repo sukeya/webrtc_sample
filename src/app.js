@@ -6,8 +6,10 @@ import { db, auth } from "init-firebase"
 
 import { v4 as uuidv4 } from "uuid";
 import adapter from 'webrtc-adapter';
+import { MDCRipple } from '@material/ripple';
+import { MDCDialog } from '@material/dialog';
 
-mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
+const ripple = new MDCRipple(document.querySelector('.mdc-button'));
 
 // constraints of local media.
 let constraints = {
@@ -44,7 +46,7 @@ function init() {
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
   document.querySelector('#createBtn').addEventListener('click', createRoom);
   document.querySelector('#joinBtn').addEventListener('click', joinRoom);
-  roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
+  roomDialog = new MDCDialog(document.querySelector('#room-dialog'));
 }
 
 async function createRoom() {
