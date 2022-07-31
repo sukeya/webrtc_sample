@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "init-firebase"
 
 import { v4 as uuidv4 } from "uuid";
+import adapter from 'webrtc-adapter';
 
 mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
 
