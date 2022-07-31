@@ -1,3 +1,13 @@
+@use "@material/button/styles";
+@use "@material/dialog";
+@use "@material/floating-label/mdc-floating-label";
+@use "@material/line-ripple/mdc-line-ripple";
+@use "@material/notched-outline/mdc-notched-outline";
+@use "@material/textfield";
+
+@include textfield.core-styles;
+@include dialog.core-styles;
+
 body {
     background: #ECEFF1;
     color: rgba(0, 0, 0, 0.87);
