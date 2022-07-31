@@ -2,7 +2,7 @@
 
 import { ref, set, get, push, remove } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { db, auth } from "init-firebase"
+import { db, auth } from "./init-firebase"
 
 import { v4 as uuidv4 } from "uuid";
 import adapter from 'webrtc-adapter';
@@ -13,8 +13,8 @@ const ripple = new MDCRipple(document.querySelector('.mdc-button'));
 
 // constraints of local media.
 let constraints = {
-    audio: true,
-    video: true
+  audio: true,
+  video: true
 };
 
 // configuration of ICE.
@@ -111,65 +111,73 @@ function joinRoom() {
   document.querySelector('#joinBtn').disabled = true;
 
   document.querySelector('#confirmJoinBtn').
-      addEventListener('click', async () => {
-        roomId = document.querySelector('#joinRoomId').value;
-        console.log('Join room: ', roomId);
-        document.querySelector(
-            '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
-        await joinRoomById(roomId);
-      }, {once: true});
+    addEventListener('click', async () => {
+      roomId = document.querySelector('#joinRoomId').value;
+      console.log('Join room: ', roomId);
+      document.querySelector(
+        '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+      await joinRoomById(roomId);
+    }, { once: true });
   roomDialog.open();
 }
 
 async function joinRoomById(roomId) {
+  let peerUID = null;
   await get(ref(db, "rooms/" + roomId), (snapshot) => {
     if (snapshot.exists()) {
       let data = snapshot.val();
-      if (data.length < 1) {
-        await remove(ref(db, "rooms/" + roomId));
-        throw UserException("Invalid Room.");
+      if (data.length >= 1) {
+        peerUID = data[0];
       }
-      let peerUID = data[0];
-      console.log('Create PeerConnection with configuration: ', configuration);
-      peerConnection = new RTCPeerConnection(configuration);
-      registerPeerConnectionListeners();
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      let uid = authenticate();
-      // collect ICE candidates
-      pc.onicecandidate = e => onIceCandidate(uid, e);
-
-      peerConnection.addEventListener('track', event => {
-        console.log('Got remote track:', event.streams[0]);
-        event.streams[0].getTracks().forEach(track => {
-          console.log('Add a track to the remoteStream:', track);
-          remoteStream.addTrack(track);
-        });
-      });
-
-      // set remote SDP offer.
-      await get(ref(db, "offers/" + peerUID), (snapshot) => {
-        await peerConnection.setRemoteDescription(snapshot.val());
-      });
-
-      // create SDP answer.
-      let answer = peerConnection.createAnswer();
-      await set(ref(db, "offers/" + uid), {
-        type: answer.type,
-        sdp: answer.sdp
-      });
-
-      // Listening for remote ICE candidates.
-      await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
-        peerConnection.addIceCandidate(data.val());
-      });
-
-      // register myself to room.
-      await set(push(ref(db, "rooms/" + roomId)), uid);
     }
   });
+
+  if (!peerUID) {
+    await remove(ref(db, "rooms/" + roomId));
+    throw UserException("Invalid Room.");
+  }
+
+  console.log('Create PeerConnection with configuration: ', configuration);
+  peerConnection = new RTCPeerConnection(configuration);
+  registerPeerConnectionListeners();
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  let uid = authenticate();
+  // collect ICE candidates
+  pc.onicecandidate = e => onIceCandidate(uid, e);
+
+  peerConnection.addEventListener('track', event => {
+    console.log('Got remote track:', event.streams[0]);
+    event.streams[0].getTracks().forEach(track => {
+      console.log('Add a track to the remoteStream:', track);
+      remoteStream.addTrack(track);
+    });
+  });
+
+  // set remote SDP offer.
+  let remoteOffer = null;
+  await get(ref(db, "offers/" + peerUID), (snapshot) => {
+    remoteOffer = snapshot.val();
+  });
+
+  await peerConnection.setRemoteDescription(snapshot.val());
+
+  // create SDP answer.
+  let answer = peerConnection.createAnswer();
+  await set(ref(db, "offers/" + uid), {
+    type: answer.type,
+    sdp: answer.sdp
+  });
+
+  // Listening for remote ICE candidates.
+  await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
+    peerConnection.addIceCandidate(data.val());
+  });
+
+  // register myself to room.
+  await set(push(ref(db, "rooms/" + roomId)), uid);
 }
 
 async function onIceCandidate(uid, event) {
@@ -177,12 +185,12 @@ async function onIceCandidate(uid, event) {
     if (event.candidate.candidate === '') {
       return;
     }
-    const {candidate} = event;
+    const { candidate } = event;
     await set(push(ref(db, "candidates/" + uid)), candidate.toJSON());
   }
 }
 
-function hangUp() {
+async function hangUp() {
   console.log('Hang up');
   pc.close();
   pc = null;
@@ -212,7 +220,7 @@ async function openUserMedia(e) {
 function registerPeerConnectionListeners() {
   peerConnection.addEventListener('icegatheringstatechange', () => {
     console.log(
-        `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+      `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
   });
 
   peerConnection.addEventListener('connectionstatechange', () => {
@@ -225,7 +233,7 @@ function registerPeerConnectionListeners() {
 
   peerConnection.addEventListener('iceconnectionstatechange ', () => {
     console.log(
-        `ICE connection state change: ${peerConnection.iceConnectionState}`);
+      `ICE connection state change: ${peerConnection.iceConnectionState}`);
   });
 }
 
@@ -235,7 +243,7 @@ async function authenticate() {
     const password = document.querySelector(`#authPass`).value;
     let userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user.uid;
-  } catch(error) {
+  } catch (error) {
     console.error(`code: ${error.code}, ${error.message}`);
   }
 }
