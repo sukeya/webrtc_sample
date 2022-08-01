@@ -22,7 +22,7 @@ const configuration = {
   iceServers: [{
     urls: [
       'stun:stun1.l.google.com:19302',
-      'stun:stun2.l.google.com:19302'  
+      'stun:stun2.l.google.com:19302'
     ]
   }],
   iceTransportPolicy: `all`,
@@ -240,14 +240,10 @@ function registerPeerConnectionListeners() {
 }
 
 async function authenticate() {
-  try {
-    const email = document.querySelector(`#authEmail`).value;
-    const password = document.querySelector(`#authPass`).value;
-    let userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user.uid;
-  } catch (error) {
-    console.error(`code: ${error.code}, ${error.message}`);
-  }
+  const email = document.querySelector(`#authEmail`).value;
+  const password = document.querySelector(`#authPass`).value;
+  let userCredential = await signInWithEmailAndPassword(auth, email, password);
+  return userCredential.user.uid;
 }
 
 init();
