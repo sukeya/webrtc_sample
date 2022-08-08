@@ -14,19 +14,27 @@
       ".validate": true,
       "$uid": {
         ".write": "$uid == auth.uid",
-        "type": { ".validate": true },
-        "sdp": { ".validate": true },
-        "$other": { ".validate": false }
+        "type": {
+          ".validate": true
+        },
+        "sdp": {
+          ".validate": true
+        },
+        "$other": {
+          ".validate": false
+        }
       }
     },
     "candidates": {
       ".validate": true,
       "$uid": {
-	      "$candidate": {
+        "$candidate": {
           ".write": "$uid == auth.uid"
-        }        
+        }
       }
     },
-    "$other": { ".validate": false }
+    "$other": {
+      ".validate": false
+    }
   }
 }
