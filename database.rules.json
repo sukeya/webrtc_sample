@@ -1,16 +1,16 @@
 {
   "rules": {
-    ".read": "auth != null",
     "rooms": {
+      ".read": true,
       ".validate": true,
-      "$room_id": "auth != null",
-      "users": {
+      "$room_id": {
         "$uid": {
           ".write": "$uid == auth.uid"
-        }  
+        }
       }
     },
     "offers": {
+      ".read": true,
       ".validate": true,
       "$uid": {
         ".write": "$uid == auth.uid",
@@ -21,9 +21,10 @@
     },
     "candidates": {
       ".validate": true,
-      "$uid": "$uid == auth.uid",
-      "$candidate": {
-        ".write": "$uid == auth.uid"
+      "$uid": {
+	      "$candidate": {
+          ".write": "$uid == auth.uid"
+        }        
       }
     },
     "$other": { ".validate": false }
