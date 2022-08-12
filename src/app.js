@@ -51,9 +51,6 @@ function init() {
 }
 
 async function createRoom() {
-  document.querySelector('#createBtn').disabled = true;
-  document.querySelector('#joinBtn').disabled = true;
-
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
 
@@ -107,12 +104,12 @@ async function createRoom() {
   await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
     peerConnection.addIceCandidate(data.val());
   });
+
+  document.querySelector('#createBtn').disabled = true;
+  document.querySelector('#joinBtn').disabled = true;
 }
 
 function joinRoom() {
-  document.querySelector('#createBtn').disabled = true;
-  document.querySelector('#joinBtn').disabled = true;
-
   document.querySelector('#confirmJoinBtn').
     addEventListener('click', async () => {
       roomId = document.querySelector('#joinRoomId').value;
@@ -122,6 +119,9 @@ function joinRoom() {
       await joinRoomById(roomId);
     }, { once: true });
   roomDialog.open();
+
+  document.querySelector('#createBtn').disabled = true;
+  document.querySelector('#joinBtn').disabled = true;
 }
 
 async function joinRoomById(roomId) {
