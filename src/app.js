@@ -1,10 +1,9 @@
 `use strict`;
 
-import { ref, set, get, push, remove } from "firebase/database";
+import { ref, set, get, push, update, child } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "./init-firebase"
 
-import { v4 as uuidv4 } from "uuid";
 import adapter from 'webrtc-adapter';
 import { MDCRipple } from '@material/ripple';
 import { MDCDialog } from '@material/dialog';
@@ -62,8 +61,10 @@ async function createRoom() {
 
   // creat a room
   const uid = await authenticate();
-  const roomId = uuidv4();
-  await set(push(ref(db, "rooms/" + roomId)), uid);
+  const roomId = await push(child(ref(db), "rooms")).key;
+  const room_menber = {};
+  room_menber["/rooms/" + roomId + "/" + uid] = {name: "test"};
+  await update(ref(db), room_menber);
   document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
   // create a offer
@@ -85,7 +86,7 @@ async function createRoom() {
   let peerUID = null;
   await onChildAdded(ref(db, "rooms/" + roomId), (data) => {
     // TODO If there are users more than 2 in a room, how should I connect each user?
-    peerUID = data.val();
+    peerUID = data.val().keys[0];
   });
 
   peerConnection.addEventListener('track', event => {
