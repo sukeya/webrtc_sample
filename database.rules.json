@@ -1,7 +1,7 @@
 {
   "rules": {
+    ".read": "auth != null",
     "rooms": {
-      ".read": true,
       ".validate": true,
       "$room_id": {
         "$uid": {
@@ -10,7 +10,6 @@
       }
     },
     "offers": {
-      ".read": true,
       ".validate": true,
       "$uid": {
         ".write": "$uid == auth.uid",
