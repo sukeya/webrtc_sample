@@ -5,14 +5,14 @@
       ".validate": true,
       "$room_id": {
         "$uid": {
-          ".write": "$uid == auth.uid"
+          ".write": "auth != null && $uid === auth.uid"
         }
       }
     },
     "offers": {
       ".validate": true,
       "$uid": {
-        ".write": "$uid == auth.uid",
+        ".write": "auth != null && $uid === auth.uid",
         "type": {
           ".validate": true
         },
@@ -28,7 +28,7 @@
       ".validate": true,
       "$uid": {
         "$candidate": {
-          ".write": "$uid == auth.uid"
+          ".write": "auth != null && $uid === auth.uid"
         }
       }
     },
