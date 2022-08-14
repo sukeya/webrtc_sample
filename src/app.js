@@ -1,6 +1,6 @@
 `use strict`;
 
-import { ref, set, get, push, update, child } from "firebase/database";
+import { ref, set, get, push, update, child, onChildAdded, remove } from "firebase/database";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "./init-firebase"
 
