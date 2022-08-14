@@ -60,17 +60,14 @@ async function createRoom() {
   const uid = await authenticate();
   const roomId = await push(child(ref(db), "rooms")).key;
   const room_menber = {};
-  room_menber["/rooms/" + roomId + "/" + uid] = {name: "test"};
+  room_menber["/rooms/" + roomId + "/" + uid] = { "name": "test" };
   await update(ref(db), room_menber);
   document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
   // create a offer
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
-  await set(ref(db, "offers/" + uid), {
-    type: offer.type,
-    sdp: offer.sdp
-  });
+  await set(ref(db, 'offers/' + uid), { "type": offer.type, "sdp": offer.sdp });
 
   localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, localStream);
