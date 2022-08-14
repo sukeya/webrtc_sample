@@ -124,6 +124,9 @@ function joinRoom() {
 }
 
 async function joinRoomById(roomId) {
+  // Before getting peer uid, authenticate myself.
+  let uid = await authenticate();
+
   let peerUID = null;
   await get(ref(db, "rooms/" + roomId), (snapshot) => {
     if (snapshot.exists()) {
@@ -146,7 +149,6 @@ async function joinRoomById(roomId) {
     peerConnection.addTrack(track, localStream);
   });
 
-  let uid = authenticate();
   // collect ICE candidates
   pc.onicecandidate = e => onIceCandidate(uid, e);
 
