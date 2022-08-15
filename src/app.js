@@ -130,12 +130,12 @@ async function joinRoomById(roomId) {
   let uid = await authenticate();
 
   let peerUID = null;
-  await get(ref(db, "rooms/" + roomId), (snapshot) => {
-    if (snapshot.exists()) {
-      let data = snapshot.val();
-      if (data.length >= 1) {
-        peerUID = data[0];
-      }
+  let peerUIDs = [];
+  await onChildAdded(ref(db, "rooms/" + roomId), (data) => {
+    if (data.key != uid) {
+      peerUIDs.push(data.key);
+      // always, peer user id is one who made this room.
+      peerUID = peerUIDs[0];
     }
   });
 
