@@ -147,7 +147,7 @@ async function joinRoomById(roomId) {
   });
 
   // collect ICE candidates
-  pc.onicecandidate = e => onIceCandidate(uid, e);
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
 
   peerConnection.addEventListener('track', event => {
     console.log('Got remote track:', event.streams[0]);
@@ -187,14 +187,14 @@ async function onIceCandidate(uid, event) {
       return;
     }
     const { candidate } = event;
-    await set(push(ref(db, "candidates/" + uid)), candidate.toJSON());
+    await push(ref(db, "candidates/" + uid), candidate.toJSON());
   }
 }
 
 async function hangUp() {
   console.log('Hang up');
-  pc.close();
-  pc = null;
+  peerConnection.close();
+  peerConnection = null;
   document.querySelector('#hangupBtn').disabled = true;
   // delete room.
   await remove(ref(db, "rooms/" + roomId));
