@@ -96,14 +96,14 @@ async function createRoom() {
   });
 
   // Listening for remote session description.
-  await get(ref(db, "offers/" + peerUID), (snapshot) => {
-    peerConnection.setRemoteDescription(snapshot.val());
+  await get(ref(db, "offers/" + peerUID), async (snapshot) => {
+    await peerConnection.setRemoteDescription(snapshot.val());
   });
 
   // Listen for remote ICE candidates
   // TODO should I do `get` before watching whether a child is added.
-  await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
-    peerConnection.addIceCandidate(data.val());
+  await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
+    await peerConnection.addIceCandidate(data.val());
   });
 
   document.querySelector('#createBtn').disabled = true;
@@ -163,15 +163,15 @@ async function joinRoomById(roomId) {
   });
 
   // create SDP answer.
-  let answer = peerConnection.createAnswer();
+  let answer = await peerConnection.createAnswer();
   await set(ref(db, "offers/" + uid), {
     type: answer.type,
     sdp: answer.sdp
   });
 
   // Listening for remote ICE candidates.
-  await onChildAdded(ref(db, "candidates/" + peerUID), (data) => {
-    peerConnection.addIceCandidate(data.val());
+  await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
+    await peerConnection.addIceCandidate(data.val());
   });
 
   // register myself to room.
