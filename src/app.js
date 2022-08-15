@@ -158,12 +158,9 @@ async function joinRoomById(roomId) {
   });
 
   // set remote SDP offer.
-  let remoteOffer = null;
-  await get(ref(db, "offers/" + peerUID), (snapshot) => {
-    remoteOffer = snapshot.val();
+  await get(ref(db, "offers/" + peerUID), async (snapshot) => {
+    await peerConnection.setRemoteDescription(snapshot.val());
   });
-
-  await peerConnection.setRemoteDescription(snapshot.val());
 
   // create SDP answer.
   let answer = peerConnection.createAnswer();
