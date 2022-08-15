@@ -175,7 +175,7 @@ async function joinRoomById(roomId) {
   });
 
   // register myself to room.
-  await set(push(ref(db, "rooms/" + roomId)), uid);
+  await push(ref(db, "rooms/" + roomId + "/" + uid), { "name": "test2" });
 }
 
 async function onIceCandidate(uid, event) {
