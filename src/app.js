@@ -139,11 +139,6 @@ async function joinRoomById(roomId) {
     }
   });
 
-  if (!peerUID) {
-    await remove(ref(db, "rooms/" + roomId));
-    throw UserException("Invalid Room.");
-  }
-
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
   registerPeerConnectionListeners();
