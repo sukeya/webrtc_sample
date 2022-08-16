@@ -79,11 +79,22 @@ async function createRoom() {
   // watch another user entered in the room.
   let peerUID = null;
   let peerUIDs = [];
-  await onChildAdded(ref(db, "rooms/" + roomId), (data) => {
+  await onChildAdded(ref(db, "rooms/" + roomId), async (data) => {
     // TODO If there are users more than 2 in a room, how should I connect each user?
     if (data.key != uid) {
       peerUIDs.push(data.key);
       peerUID = peerUIDs[0];
+      if (peerUIDs.length == 1) {
+        // Listening for remote session description.
+        let snapshot = await get(ref(db, "offers/" + peerUID));
+        await peerConnection.setRemoteDescription(snapshot.val());
+
+        // Listen for remote ICE candidates
+        // TODO should I do `get` before watching whether a child is added.
+        await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
+          await peerConnection.addIceCandidate(data.val());
+        });
+      }
     }
   });
 
@@ -93,17 +104,6 @@ async function createRoom() {
       console.log('Add a track to the remoteStream:', track);
       remoteStream.addTrack(track);
     });
-  });
-
-  // Listening for remote session description.
-  await get(ref(db, "offers/" + peerUID), async (snapshot) => {
-    await peerConnection.setRemoteDescription(snapshot.val());
-  });
-
-  // Listen for remote ICE candidates
-  // TODO should I do `get` before watching whether a child is added.
-  await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
-    await peerConnection.addIceCandidate(data.val());
   });
 
   document.querySelector('#createBtn').disabled = true;
@@ -131,11 +131,30 @@ async function joinRoomById(roomId) {
 
   let peerUID = null;
   let peerUIDs = [];
-  await onChildAdded(ref(db, "rooms/" + roomId), (data) => {
+  await onChildAdded(ref(db, "rooms/" + roomId), async (data) => {
     if (data.key != uid) {
       peerUIDs.push(data.key);
       // always, peer user id is one who made this room.
       peerUID = peerUIDs[0];
+      // the following code is run when first data is added.
+      if (peerUIDs.length == 1) {
+        // set remote SDP offer.
+        let snapshot = await get(ref(db, "offers/" + peerUID));
+        await peerConnection.setRemoteDescription(snapshot.val());
+        // create SDP answer.
+        let answer = await peerConnection.createAnswer();
+        await set(ref(db, "offers/" + uid), {
+          type: answer.type,
+          sdp: answer.sdp
+        });
+
+        // Listening for remote ICE candidates.
+        await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
+          await peerConnection.addIceCandidate(data.val());
+        });
+        // register myself to room.
+        await set(ref(db, "rooms/" + roomId + "/" + uid), { "name": "test2" });
+      }
     }
   });
 
@@ -156,26 +175,6 @@ async function joinRoomById(roomId) {
       remoteStream.addTrack(track);
     });
   });
-
-  // set remote SDP offer.
-  await get(ref(db, "offers/" + peerUID), async (snapshot) => {
-    await peerConnection.setRemoteDescription(snapshot.val());
-  });
-
-  // create SDP answer.
-  let answer = await peerConnection.createAnswer();
-  await set(ref(db, "offers/" + uid), {
-    type: answer.type,
-    sdp: answer.sdp
-  });
-
-  // Listening for remote ICE candidates.
-  await onChildAdded(ref(db, "candidates/" + peerUID), async (data) => {
-    await peerConnection.addIceCandidate(data.val());
-  });
-
-  // register myself to room.
-  await push(ref(db, "rooms/" + roomId + "/" + uid), { "name": "test2" });
 }
 
 async function onIceCandidate(uid, event) {
