@@ -24,6 +24,21 @@
         }
       }
     },
+    "answers": {
+      ".validate": true,
+      "$uid": {
+        ".write": "auth != null && $uid === auth.uid",
+        "type": {
+          ".validate": true
+        },
+        "sdp": {
+          ".validate": true
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
     "candidates": {
       ".validate": true,
       "$uid": {
