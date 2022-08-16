@@ -55,8 +55,12 @@ async function createRoom() {
 
   registerPeerConnectionListeners();
 
-  // creat a room
+  // authenticate myself
   const uid = await authenticate();
+  // upload my ICE candidates.
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
+
+  // creat a room
   const roomId = await push(child(ref(db), "rooms")).key;
   const room_menber = {};
   room_menber["/rooms/" + roomId + "/" + uid] = { "name": "test" };
@@ -71,9 +75,6 @@ async function createRoom() {
   localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, localStream);
   });
-
-  // upload my ICE candidates.
-  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
 
   // watch another user entered in the room.
   let peerUID = null;
@@ -128,6 +129,16 @@ async function joinRoomById(roomId) {
   // Before getting peer uid, authenticate myself.
   let uid = await authenticate();
 
+  console.log('Create PeerConnection with configuration: ', configuration);
+  peerConnection = new RTCPeerConnection(configuration);
+  registerPeerConnectionListeners();
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  // collect ICE candidates
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
+
   let peerUID = null;
   let peerUIDs = [];
   await onChildAdded(ref(db, "rooms/" + roomId), async (data) => {
@@ -157,16 +168,6 @@ async function joinRoomById(roomId) {
       }
     }
   });
-
-  console.log('Create PeerConnection with configuration: ', configuration);
-  peerConnection = new RTCPeerConnection(configuration);
-  registerPeerConnectionListeners();
-  localStream.getTracks().forEach(track => {
-    peerConnection.addTrack(track, localStream);
-  });
-
-  // collect ICE candidates
-  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
 
   peerConnection.addEventListener('track', event => {
     console.log('Got remote track:', event.streams[0]);
