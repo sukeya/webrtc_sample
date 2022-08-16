@@ -85,7 +85,7 @@ async function createRoom() {
       peerUID = peerUIDs[0];
       if (peerUIDs.length == 1) {
         // Listening for remote session description.
-        let snapshot = await get(ref(db, "offers/" + peerUID));
+        let snapshot = await get(ref(db, "answers/" + peerUID));
         await peerConnection.setRemoteDescription(snapshot.val());
 
         // Listen for remote ICE candidates
@@ -142,7 +142,8 @@ async function joinRoomById(roomId) {
         await peerConnection.setRemoteDescription(snapshot.val());
         // create SDP answer.
         let answer = await peerConnection.createAnswer();
-        await set(ref(db, "offers/" + uid), {
+        await peerConnection.setLocalDescription(answer);
+        await set(ref(db, "answers/" + uid), {
           type: answer.type,
           sdp: answer.sdp
         });
