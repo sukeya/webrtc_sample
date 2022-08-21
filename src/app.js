@@ -193,8 +193,10 @@ async function hangUp() {
   peerConnection.close();
   peerConnection = null;
   document.querySelector('#hangupBtn').disabled = true;
-  // delete room.
-  await remove(ref(db, "rooms/" + roomId));
+  if (!roomId) {
+    // delete room.
+    await remove(ref(db, "rooms/" + roomId));
+  }
   // delete offer
   await remove(ref(db, "offers/" + uid));
   // delete ICE candidates
