@@ -199,6 +199,8 @@ async function hangUp() {
   }
   // delete offer
   await remove(ref(db, "offers/" + uid));
+  // delete answer
+  await remove(ref(db, "answers/" + uid));
   // delete ICE candidates
   await remove(ref(db, "candidates/" + uid));
 }
