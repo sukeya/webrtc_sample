@@ -195,7 +195,7 @@ async function hangUp() {
   peerConnection.close();
   peerConnection = null;
   document.querySelector('#hangupBtn').disabled = true;
-  if (!roomId) {
+  if (roomId) {
     // delete room.
     await remove(ref(db, "rooms/" + roomId));
   }
