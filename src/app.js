@@ -36,6 +36,9 @@ let peerConnection = null;
 let roomDialog = null;
 let roomId = null;
 
+// user id
+let uid = null;
+
 function UserException(message) {
   this.message = message;
   this.name = 'UserException';
@@ -56,9 +59,9 @@ async function createRoom() {
   registerPeerConnectionListeners();
 
   // authenticate myself
-  const uid = await authenticate();
+  uid = await authenticate();
   // upload my ICE candidates.
-  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
+  peerConnection.onicecandidate = e => onIceCandidate(e);
 
   // creat a room
   const roomId = await push(child(ref(db), "rooms")).key;
@@ -115,8 +118,7 @@ function joinRoom() {
     addEventListener('click', async () => {
       roomId = document.querySelector('#room-id').value;
       console.log('Join room: ', roomId);
-      document.querySelector(
-        '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+      document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
       await joinRoomById(roomId);
     }, { once: true });
   roomDialog.open();
@@ -127,7 +129,7 @@ function joinRoom() {
 
 async function joinRoomById(roomId) {
   // Before getting peer uid, authenticate myself.
-  let uid = await authenticate();
+  uid = await authenticate();
 
   console.log('Create PeerConnection with configuration: ', configuration);
   peerConnection = new RTCPeerConnection(configuration);
@@ -137,7 +139,7 @@ async function joinRoomById(roomId) {
   });
 
   // collect ICE candidates
-  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
+  peerConnection.onicecandidate = e => onIceCandidate(e);
 
   let peerUID = null;
   let peerUIDs = [];
