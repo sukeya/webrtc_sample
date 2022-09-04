@@ -11,7 +11,7 @@ import { MDCDialog } from '@material/dialog';
 const ripple = new MDCRipple(document.querySelector('.mdc-button'));
 
 // constraints of local media.
-let constraints = {
+const constraints = {
   audio: true,
   video: true
 };
