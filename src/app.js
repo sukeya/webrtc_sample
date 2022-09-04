@@ -71,14 +71,14 @@ async function createRoom() {
   await update(ref(db), room_menber);
   document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the caller!`
 
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
   // create a offer
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
   await set(ref(db, 'offers/' + uid), { "type": offer.type, "sdp": offer.sdp });
-
-  localStream.getTracks().forEach(track => {
-    peerConnection.addTrack(track, localStream);
-  });
 
   // watch another user entered in the room.
   let peerUID = null;
