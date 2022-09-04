@@ -61,7 +61,7 @@ async function createRoom() {
   // authenticate myself
   uid = await authenticate();
   // upload my ICE candidates.
-  peerConnection.onicecandidate = e => onIceCandidate(e);
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
 
   // creat a room
   const roomId = await push(child(ref(db), "rooms")).key;
@@ -139,7 +139,7 @@ async function joinRoomById(roomId) {
   });
 
   // collect ICE candidates
-  peerConnection.onicecandidate = e => onIceCandidate(e);
+  peerConnection.onicecandidate = e => onIceCandidate(uid, e);
 
   let peerUID = null;
   let peerUIDs = [];
