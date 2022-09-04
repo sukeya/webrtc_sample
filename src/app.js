@@ -37,6 +37,7 @@ let roomDialog = null;
 let roomId = null;
 
 // user id
+// uid must be a global var because hungup func needs it.
 let uid = null;
 
 function UserException(message) {
