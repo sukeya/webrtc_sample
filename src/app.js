@@ -23,8 +23,8 @@ const configuration = {
       'stun:stun.l.google.com:19302',
     ]
   }],
-  iceTransportPolicy: `all`,
-  iceCandidatePoolSize: 10
+  iceTransportPolicy: 'all',
+  iceCandidatePoolSize: 0
 };
 
 // local media
